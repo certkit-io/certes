@@ -18,16 +18,18 @@ namespace Certes
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
-#if NETCOREAPP3_1_OR_GREATER
-            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
-#elif NETCOREAPP1_0_OR_GREATER
-            var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (msg, cert, chains, errors) => true };
-#else
-            System.Net.ServicePointManager.ServerCertificateValidationCallback = (msg, cert, chains, errors) => true;
-            var handler = new HttpClientHandler();
-#endif
 
-            return new HttpClient(handler);
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            var client = new HttpClient(handler);
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("CertKit-Agent/1.2.3 (+https://certkit.io)");
+
+            return client;
         });
 
         private static Uri stagingServerV2;
@@ -41,11 +43,9 @@ namespace Certes
                 return stagingServerV2;
             }
 
-            var servers = new[] {
-                //new Uri("https://lo0.in:4431/directory"),
-                //new Uri("http://localhost:8080/dir"),
-                new Uri("https://pebble.azurewebsites.net/dir"),
-                //WellKnownServers.LetsEncryptStagingV2,
+            var servers = new[]
+            {
+                new Uri("https://127.0.0.1:14000/dir")
             };
 
             var exceptions = new List<Exception>();

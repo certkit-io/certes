@@ -80,6 +80,7 @@ namespace Certes
         /// The <see cref="StreamingContext"/> 
         /// that contains contextual information about the source or destination.
         /// </param>
+        [Obsolete("Formatter-based serialization is obsolete and should not be used.")]
         protected AcmeRequestException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
@@ -102,6 +103,7 @@ namespace Certes
         /// The <see cref="StreamingContext"/> that 
         /// contains contextual information about the source or destination.
         /// </param>
+        [Obsolete("Formatter-based serialization is obsolete and should not be used.")]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);

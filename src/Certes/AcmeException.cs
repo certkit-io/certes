@@ -53,6 +53,7 @@ namespace Certes
         /// The <see cref="StreamingContext"/> 
         /// that contains contextual information about the source or destination.
         /// </param>
+        [Obsolete("Formatter-based serialization is obsolete and should not be used.")]
         protected AcmeException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
