@@ -4,6 +4,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>true</IsPackable>
     <Authors>Certes Contributors</Authors>
     <Company />
     <Product>Certes ACME Client CLI</Product>
@@ -15,10 +16,10 @@
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <PackageId>dotnet-certes</PackageId>
+    <PackageId>dotnet-certkit-certes</PackageId>
     <PackageIcon>logo.png</PackageIcon>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>certes</ToolCommandName>
+    <ToolCommandName>certes-certkit</ToolCommandName>
     <AssemblyName>dotnet-certes</AssemblyName>
   </PropertyGroup>
 

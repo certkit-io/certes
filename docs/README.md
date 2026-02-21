@@ -137,6 +137,27 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
+## How to release
+
+For this fork, use fork-specific package identities to avoid conflicts with upstream:
+- Library package: `CertKit.Certes`
+- CLI tool package: `dotnet-certkit-certes`
+- CLI command name: `certes-certkit`
+
+Pack both projects with an explicit version (recommended):
+
+```PowerShell
+dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
+dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
+```
+
+Next release example:
+
+```PowerShell
+dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.2
+dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.2
+```
+
 ## CI Status
 [![NuGet](https://img.shields.io/nuget/vpre/certes.svg?label=Certes)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
