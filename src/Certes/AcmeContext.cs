@@ -183,10 +183,11 @@ namespace Certes
         /// <param name="identifiers">The identifiers.</param>
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
+        /// <param name="profile">The certificate profile to request.</param>
         /// <returns>
         /// The order context created.
         /// </returns>
-        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null)
+        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, string profile = null)
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);
 
@@ -197,6 +198,7 @@ namespace Certes
                     .ToArray(),
                 NotBefore = notBefore,
                 NotAfter = notAfter,
+                Profile = profile,
             };
 
             var order = await HttpClient.Post<Order>(this, endpoint, body, true);

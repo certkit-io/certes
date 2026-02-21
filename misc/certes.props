@@ -67,7 +67,7 @@
   <!-- ============================= -->
   <!-- Strong Name Signing (Optional) -->
   <!-- ============================= -->
-  <PropertyGroup>
+  <!--<PropertyGroup>
     <SignAssembly>true</SignAssembly>
     <PublicSign>true</PublicSign>
 
@@ -80,6 +80,6 @@
     <SignAssembly>false</SignAssembly>
     <PublicSign>false</PublicSign>
     <DefineConstants>$(DefineConstants);SKIP_SIGNING</DefineConstants>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
 </Project>

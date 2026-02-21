@@ -96,6 +96,15 @@ namespace Certes.Acme.Resource
         public Uri Certificate { get; set; }
 
         /// <summary>
+        /// Gets or sets the certificate profile.
+        /// </summary>
+        /// <value>
+        /// The certificate profile identifier.
+        /// </value>
+        [JsonProperty("profile")]
+        public string Profile { get; set; }
+
+        /// <summary>
         /// Represents the payload to finalize an order.
         /// </summary>
         /// <seealso cref="Certes.Acme.Resource.Order" />
