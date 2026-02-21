@@ -11,7 +11,7 @@ $cliArchiveName = "certes-cli.zip"
 $binPath = "./.certes"
 $certesBinPath = "$binPath/bin"
 $dotnetBinPath = "$binPath/dotnet"
-$cliPath = "$certesBinPath/Certes.CertKit.CLI.dll"
+$cliPath = "$certesBinPath/Certes.Cli.dll"
 $cliMinVersion = [Version]"2.0.0"
 
 Function Say($str) {

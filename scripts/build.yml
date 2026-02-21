@@ -32,7 +32,7 @@ jobs:
         displayName: "Build unit tests"
         inputs:
           command: "build"
-          projects: "test/Certes.CertKit.Tests/Certes.CertKit.Tests.csproj"
+          projects: "test/Certes.Tests/Certes.Tests.csproj"
           arguments: "-f ${{ parameters.appFramework }} -p:SkipSigning=true"
         env:
           CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
@@ -43,7 +43,7 @@ jobs:
         displayName: "Run unit tests"
         inputs:
           command: "test"
-          projects: "test/Certes.CertKit.Tests/Certes.CertKit.Tests.csproj"
+          projects: "test/Certes.Tests/Certes.Tests.csproj"
           arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
           testRunTitle: "Unit Tests"
           publishTestResults: false
@@ -53,13 +53,13 @@ jobs:
         inputs:
           command: "custom"
           custom: codecov
-          arguments: "-f $(Build.SourcesDirectory)/test/Certes.CertKit.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)"
+          arguments: "-f $(Build.SourcesDirectory)/test/Certes.Tests/TestResults/**/*.xml --flag unittests -t $(CODECOV_TOKEN)"
 
       - task: DotNetCoreCLI@2
         displayName: "Build integration tests"
         inputs:
           command: "build"
-          projects: "test/Certes.CertKit.Tests.Integration/Certes.CertKit.Tests.Integration.csproj"
+          projects: "test/Certes.Tests.Integration/Certes.Tests.Integration.csproj"
           arguments: "-f ${{ parameters.appFramework }} -p:SkipSigning=true"
         env:
           CERTES_ASSEMBLY_VERSION: $(assemblyVersion)
@@ -70,7 +70,7 @@ jobs:
         displayName: "Run integration tests"
         inputs:
           command: "test"
-          projects: "test/Certes.CertKit.Tests.Integration/Certes.CertKit.Tests.Integration.csproj"
+          projects: "test/Certes.Tests.Integration/Certes.Tests.Integration.csproj"
           arguments: '-f ${{ parameters.appFramework }} --no-build --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover'
           testRunTitle: "Integration Tests"
           publishTestResults: false
@@ -80,4 +80,4 @@ jobs:
         inputs:
           command: "custom"
           custom: codecov
-          arguments: "-f $(Build.SourcesDirectory)/test/Certes.CertKit.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)"
+          arguments: "-f $(Build.SourcesDirectory)/test/Certes.Tests.Integration/TestResults/**/*.xml --flag integration -t $(CODECOV_TOKEN)"

@@ -1,4 +1,4 @@
-﻿# Certes
+# Certes
 
 Certes is an [ACME](https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment)
 client runs on .NET 4.5+ and .NET Standard 2.0+, supports ACME v2 and wildcard certificates.
@@ -8,11 +8,11 @@ It is aimed to provide an easy to use API for managing certificates during deplo
 
 Install [Certes](https://www.nuget.org/packages/Certes/) nuget package into your project:
 ```PowerShell
-Install-Package Certes.CertKit
+Install-Package Certes
 ```
 or using .NET CLI:
 ```DOS
-dotnet add package Certes.CertKit
+dotnet add package Certes
 ```
 
 [Let's Encrypt](https://letsencrypt.org/how-it-works/)
@@ -121,7 +121,7 @@ The CLI is available as a dotnet global tool.
 
 To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
 ```DOS
-dotnet tool install --global dotnet-certes-certkit
+dotnet tool install --global dotnet-certes
 ```
 
 See [CLI usage](CLI.md), or simply use the `--help` option to get started
@@ -140,8 +140,8 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 ## CI Status
 [![NuGet](https://img.shields.io/nuget/vpre/certes.svg?label=Certes)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
-[![NuGet](https://img.shields.io/nuget/vpre/dotnet-certes-certkit.svg?label=CLI)](https://www.nuget.org/packages/dotnet-certes-certkit/absoluteLatest/)
-[![NuGet](https://img.shields.io/nuget/dt/dotnet-certes-certkit.svg)](https://www.nuget.org/packages/dotnet-certes-certkit/)
+[![NuGet](https://img.shields.io/nuget/vpre/dotnet-certes.svg?label=CLI)](https://www.nuget.org/packages/dotnet-certes/absoluteLatest/)
+[![NuGet](https://img.shields.io/nuget/dt/dotnet-certes.svg)](https://www.nuget.org/packages/dotnet-certes/)
 
 
 [![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/main.svg)](https://ci.appveyor.com/project/fszlin/certes)
@@ -150,4 +150,3 @@ Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 [![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=main)](https://bettercodehub.com/results/fszlin/certes)
 
 [AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43
-
