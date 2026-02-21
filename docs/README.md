@@ -63,6 +63,28 @@ For non-wildcard certificate, HTTP challenge is also available
 ```C#
 var order = await acme.NewOrder(new[] { "your.domain.name" });
 ```
+
+### Profiles
+
+If the ACME server supports [certificate profiles](https://www.ietf.org/archive/id/draft-aaron-acme-profiles-01.txt),
+you can discover available profiles from the directory metadata and request a specific profile when placing an order:
+
+```C#
+// Check available profiles
+var dir = await acme.GetDirectory();
+foreach (var (name, description) in dir.Meta.Profiles)
+{
+    Console.WriteLine($"{name}: {description}");
+}
+
+// Place an order with a specific profile
+var order = await acme.NewOrder(new[] { "your.domain.name" }, profile: "shortLived");
+
+// The profile is also available on the returned order resource
+var resource = await order.Resource();
+Console.WriteLine(resource.Profile);
+```
+
 ## Authorization
 
 Get the **token** and **key authorization string**
@@ -144,23 +166,34 @@ For this fork, use fork-specific package identities to avoid conflicts with upst
 - CLI tool package: `dotnet-certkit-certes`
 - CLI command name: `certes-certkit`
 
-Pack both projects with an explicit version (recommended):
+Pack using `build.ps1` (auto-increments version and copies to `.nuget-local` feed):
+
+```PowerShell
+.\build.ps1
+.\build.ps1 -Project ".\src\Certes.Cli\Certes.Cli.csproj"
+
+# With an explicit version
+.\build.ps1 -Version "3.0.0-certkit.5"
+
+# Copy to an additional output directory
+.\build.ps1 -OutputDir "..\my-packages"
+```
+
+Or pack directly with dotnet:
 
 ```PowerShell
 dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
 dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
-
-# or
-
-$env:CERTES_PACKAGE_VERSION="3.0.0-certkit.2"
-dotnet pack -c Release
 ```
 
-Next release example:
+### Publishing to GitHub Packages
 
 ```PowerShell
-dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.2
-dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.2
+# Set your GitHub PAT (needs write:packages scope)
+$env:GITHUB_TOKEN = "ghp_..."
+
+# Publish a package
+.\publish-nuget.ps1 -Package ".\.nuget-local\CertKit.Certes.3.0.0-certkit.1.nupkg"
 ```
 
 ## CI Status

@@ -22,7 +22,13 @@ param(
   [string] $Version,
 
   # If set, don't copy packages into the feed folder
-  [switch] $NoCopy
+  [switch] $NoCopy,
+
+  # Additional output directory for the nupkg (relative or absolute)
+  [string] $OutputDir,
+
+  # Max packages to keep per package ID in the feed folder (oldest pruned first)
+  [int] $MaxFeedVersions = 20
 )
 
 Set-StrictMode -Version Latest
@@ -65,6 +71,16 @@ if (-not (Test-Path $projPath)) {
 
 $feedPath = Resolve-HerePath $FeedDir
 if (-not $NoCopy) { Ensure-Dir $feedPath }
+
+$outputPath = $null
+if (-not [string]::IsNullOrWhiteSpace($OutputDir)) {
+  if ([System.IO.Path]::IsPathRooted($OutputDir)) {
+    $outputPath = $OutputDir
+  } else {
+    $outputPath = (Join-Path (Get-Location).Path $OutputDir)
+  }
+  Ensure-Dir $outputPath
+}
 
 # --- Determine PackageId from the csproj (simple XML read) ---
 [xml]$csproj = Get-Content -Raw -Path $projPath
@@ -142,10 +158,36 @@ if (-not $NoCopy) {
   Write-Host ""
   Write-Host "Copied package(s) to feed:"
   Write-Host "  $feedPath"
+
+  # --- Prune old versions in feed ---
+  $feedPkgs = Get-ChildItem -Path $feedPath -Filter "$packageId.*.nupkg" -File -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -notlike "*.symbols.nupkg" } |
+    Sort-Object -Property LastWriteTime -Descending
+
+  if ($feedPkgs.Count -gt $MaxFeedVersions) {
+    $toRemove = $feedPkgs | Select-Object -Skip $MaxFeedVersions
+    foreach ($old in $toRemove) {
+      $oldSnupkg = Join-Path $feedPath ([System.IO.Path]::ChangeExtension($old.Name, ".snupkg"))
+      Remove-Item -Force $old.FullName
+      if (Test-Path $oldSnupkg) { Remove-Item -Force $oldSnupkg }
+      Write-Host "  Pruned: $($old.Name)"
+    }
+  }
+
   Write-Host ""
   Write-Host "Consume with:"
   Write-Host "  <PackageReference Include=""$packageId"" Version=""$Version"" />"
 } else {
   Write-Host ""
   Write-Host "NoCopy set; not copying into feed."
+}
+
+# --- Copy to OutputDir ---
+if ($outputPath) {
+  Copy-Item -Force $nupkg.FullName -Destination $outputPath
+  if ($snupkg) { Copy-Item -Force $snupkg.FullName -Destination $outputPath }
+
+  Write-Host ""
+  Write-Host "Copied package(s) to output dir:"
+  Write-Host "  $outputPath"
 }
