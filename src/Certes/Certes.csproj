@@ -11,10 +11,10 @@
     <Title>$(Product)</Title>
     <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
     <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
-    <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/certkit-io/certes</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
+    <RepositoryUrl>https://github.com/certkit-io/certes</RepositoryUrl>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
     <PackageIcon>logo.png</PackageIcon>
   </PropertyGroup>
@@ -40,10 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
   </ItemGroup>

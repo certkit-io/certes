@@ -149,6 +149,11 @@ Pack both projects with an explicit version (recommended):
 ```PowerShell
 dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
 dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
+
+# or
+
+$env:CERTES_PACKAGE_VERSION="3.0.0-certkit.2"
+dotnet pack -c Release
 ```
 
 Next release example:

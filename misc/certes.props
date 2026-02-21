@@ -1,43 +1,85 @@
 <Project>
+
+  <!-- ============================= -->
+  <!-- Core Build Settings -->
+  <!-- ============================= -->
   <PropertyGroup>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <LangVersion>Latest</LangVersion>
-    <SignAssembly>true</SignAssembly>
-    <PublicSign Condition="'$(TargetFramework)' != 'net462'">True</PublicSign>
-    <AssemblyOriginatorKeyFile>../../misc/certes.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- Assembly version: bump rarely -->
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+
+    <!-- Base NuGet version: bump per release -->
+    <CertesBaseVersion>3.0.0-certkit.1</CertesBaseVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(APPVEYOR)' != ''">
-    <CertesFileVersionSuffix>.$(APPVEYOR_BUILD_NUMBER)</CertesFileVersionSuffix>
-    <CertesInformationalVersionSuffix>-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_NUMBER)</CertesInformationalVersionSuffix>
-    <CertesPackageVersionSuffix Condition="'$(APPVEYOR_REPO_BRANCH)' != 'release'">
-      $(CertesInformationalVersionSuffix)</CertesPackageVersionSuffix>
-  </PropertyGroup>
+
+
+  <!-- ============================= -->
+  <!-- Versioning -->
+  <!-- ============================= -->
   <PropertyGroup>
-    <Version>$(AssemblyVersion)$(CertesPackageVersionSuffix)</Version>
-    <FileVersion>$(AssemblyVersion)$(CertesFileVersionSuffix)</FileVersion>
-    <InformationalVersion>$(AssemblyVersion)$(CertesInformationalVersionSuffix)</InformationalVersion>
+    <!-- NuGet package version -->
+    <Version>$(CertesBaseVersion)</Version>
+
+    <!-- File + informational versions -->
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <InformationalVersion>$(Version)</InformationalVersion>
   </PropertyGroup>
-  <!-- Overwrite versions if specified via env -->
+
+
+  <!-- ============================= -->
+  <!-- Environment Overrides -->
+  <!-- ============================= -->
   <PropertyGroup>
-    <AssemblyVersion Condition="$(CERTES_ASSEMBLY_VERSION) != ''">$(CERTES_ASSEMBLY_VERSION)</AssemblyVersion>
-    <Version Condition="$(CERTES_PACKAGE_VERSION) != ''">$(CERTES_PACKAGE_VERSION)</Version>
-    <FileVersion Condition="$(CERTES_FILE_VERSION) != ''">$(CERTES_FILE_VERSION)</FileVersion>
-    <InformationalVersion Condition="$(CERTES_INFORMATIONAL_VERSION) != ''">
-      $(CERTES_INFORMATIONAL_VERSION)</InformationalVersion>
+    <!-- Override from env/CLI if provided -->
+    <Version Condition="'$(CERTES_PACKAGE_VERSION)' != ''">
+      $(CERTES_PACKAGE_VERSION)
+    </Version>
+
+    <AssemblyVersion Condition="'$(CERTES_ASSEMBLY_VERSION)' != ''">
+      $(CERTES_ASSEMBLY_VERSION)
+    </AssemblyVersion>
+
+    <FileVersion Condition="'$(CERTES_FILE_VERSION)' != ''">
+      $(CERTES_FILE_VERSION)
+    </FileVersion>
+
+    <InformationalVersion Condition="'$(CERTES_INFORMATIONAL_VERSION)' != ''">
+      $(CERTES_INFORMATIONAL_VERSION)
+    </InformationalVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+
+
+  <!-- ============================= -->
+  <!-- SourceLink / Debugging -->
+  <!-- ============================= -->
+  <PropertyGroup>
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <!-- ============================= -->
+  <!-- Strong Name Signing (Optional) -->
+  <!-- ============================= -->
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign>true</PublicSign>
+
+    <AssemblyOriginatorKeyFile>
+      ../../misc/certes.snk
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(SkipSigning)' == 'true'">
-    <SignAssembly>False</SignAssembly>
-    <PublicSign>False</PublicSign>
+    <SignAssembly>false</SignAssembly>
+    <PublicSign>false</PublicSign>
     <DefineConstants>$(DefineConstants);SKIP_SIGNING</DefineConstants>
   </PropertyGroup>
+
 </Project>
