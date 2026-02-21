@@ -2,52 +2,55 @@
   <Import Project="../../misc/certes.props" />
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Certes.CertKit.CLI</AssemblyName>
+    <RootNamespace>Certes.Cli</RootNamespace>
     <Authors>Certes Contributors</Authors>
     <Company />
-    <Product>Certes ACME Client</Product>
-    <Title>$(Product)</Title>
-    <Description>A client implementation for the Automated Certificate Management Environment (ACME) protocol.</Description>
-    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
+    <Product>Certes.CertKit ACME Client CLI</Product>
+    <Description>Dotnet tool for Automated Certificate Management Environment (ACME) protocol,
+      powered by Certes.</Description>
+    <PackageType>DotnetTool</PackageType>
     <PackageProjectUrl>https://github.com/fszlin/certes</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Certes;letsencrypt;ACME;HTTPS;SSL;Certificate;dotnettool</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/fszlin/certes</RepositoryUrl>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Certes.xml</DocumentationFile>
+    <PackageId>dotnet-certes-certkit</PackageId>
     <PackageIcon>logo.png</PackageIcon>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>certes-certkit</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\misc\logo.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="Resources\Certificates\dst-root-ca-x3.pem" />
-    <None Remove="Resources\Certificates\fake-le-root-x1.pem" />
-    <None Remove="Resources\Certificates\isrg-root-x1.pem" />
-  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType Condition="'$(CliOutputType)' != ''">$(CliOutputType)</OutputType>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\..\misc\AssemblyInfo.Shared.cs" Link="Properties\AssemblyInfo.Shared.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Certificates\dst-root-ca-x3.pem" />
-    <EmbeddedResource Include="Resources\Certificates\fake-le-root-x1.pem" />
-    <EmbeddedResource Include="Resources\Certificates\isrg-root-x1.pem" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.5.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="NLog" Version="5.1.1" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21216.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\Strings.Designer.cs">
+    <ProjectReference Include="..\Certes.CertKit\Certes.CertKit.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Strings.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Strings.resx</DependentUpon>
@@ -55,12 +58,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Properties\Strings.resx">
+    <EmbeddedResource Update="Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugType>Full</DebugType>
   </PropertyGroup>

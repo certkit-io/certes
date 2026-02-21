@@ -66,11 +66,11 @@ stages:
       - template: scripts/pack.yml
         parameters:
           name: "pack"
-          displayName: "Pack Certes"
-          projectName: "Certes"
+          displayName: "Pack Certes.CertKit"
+          projectName: "Certes.CertKit"
 
       - template: scripts/pack.yml
         parameters:
           name: "pack_tool"
-          displayName: "Pack Certes.Tool"
-          projectName: "Certes.Cli"
+          displayName: "Pack Certes.CertKit.CLI"
+          projectName: "Certes.CertKit.CLI"

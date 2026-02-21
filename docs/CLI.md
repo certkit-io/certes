@@ -1,13 +1,13 @@
-
+﻿
 # Free certificates using Certes CLI
 
-[Certes CLI](https://www.nuget.org/packages/dotnet-certes/)
+[Certes CLI](https://www.nuget.org/packages/dotnet-certes-certkit/)
 is delivered as a `dotnet` global tool, and it can be install
 using [dotnet tool](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-tool-install)
 command:
 
 ```PowerShell
-dotnet tool install --global dotnet-certes
+dotnet tool install --global dotnet-certes-certkit
 ```
 
 ## Managing ACME account
@@ -235,5 +235,6 @@ certes az app https://acme-v02.api.letsencrypt.org/acme/order/2/3 `
 > The Azure service principal should have `Website Contributor` role assigned.
 
 > Use the `--slot` option to deploy the SSL certificate to non-production slots.
+
 
 
