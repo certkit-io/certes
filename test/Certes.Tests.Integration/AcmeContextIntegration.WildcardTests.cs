@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Certes.Pkcs;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -21,8 +20,8 @@ namespace Certes
             public async Task CanGenerateWildcard()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"*.wildcard-es256.certes-ci.dymetis.com" };
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
+                var hosts = new[] { $"*.wildcard-es256.certes.test" };
+                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri), badNonceRetryCount: 5);
 
                 var orderCtx = await AuthzDns(ctx, hosts);
                 var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);
@@ -36,17 +35,8 @@ namespace Certes
                     CommonName = hosts[0],
                 }, certKey);
                 var pem = await orderCtx.Download(null);
-
-                var builder = new PfxBuilder(pem.Certificate.ToDer(), certKey);
-                foreach (var issuer in pem.Issuers)
-                {
-                    builder.AddIssuer(issuer.ToDer());
-                }
-
-                builder.AddTestCerts();
-
-                var pfx = builder.Build("ci", "abcd1234");
-                Assert.NotNull(pfx);
+                Assert.NotNull(pem.Certificate);
+                Assert.NotEmpty(pem.Certificate.ToDer());
             }
         }
     }

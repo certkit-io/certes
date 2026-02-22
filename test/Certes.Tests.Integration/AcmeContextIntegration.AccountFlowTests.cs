@@ -21,7 +21,7 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri));
+                var ctx = new AcmeContext(dirUri, http: GetAcmeHttpClient(dirUri), badNonceRetryCount: 5);
                 var accountCtx = await ctx.NewAccount(
                     new[] { $"mailto:certes-{DateTime.UtcNow.Ticks}@certes.app" }, true);
                 var account = await accountCtx.Resource();

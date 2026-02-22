@@ -2,7 +2,19 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:www.ietf.org)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(cd /c/Source/CertKitOther/certes/test && docker compose up -d 2>&1)",
+      "Bash(sleep 3 && curl -sk https://127.0.0.1:15000/dir 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes/test && docker compose down 2>&1)",
+      "Bash(docker run:*)",
+      "Bash(docker create --name pebble-temp ghcr.io/letsencrypt/pebble:latest 2>&1 && docker cp pebble-temp:/test/config/pebble-config.json - 2>&1 | tar xO && docker rm pebble-temp > /dev/null 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1 -p:SkipSigning=true -v n 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes/test && docker compose down 2>&1 && docker compose up -d 2>&1)",
+      "Bash(sleep 3:*)",
+      "Bash(grep:*)",
+      "Bash(grep:*1)"
     ]
   }
 }

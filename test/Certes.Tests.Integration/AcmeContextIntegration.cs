@@ -24,8 +24,8 @@ namespace Certes
         protected async Task CanGenerateCertificateWithEC(KeyAlgorithm algo)
         {
             var dirUri = await GetAcmeUriV2();
-            var hosts = new[] { $"www-ec-{algo}.certes-ci.dymetis.com".ToLower() };
-            var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri));
+            var hosts = new[] { $"www-ec-{algo}.certes.test".ToLower() };
+            var ctx = new AcmeContext(dirUri, GetKeyV2(algo), http: GetAcmeHttpClient(dirUri), badNonceRetryCount: 5);
             var orderCtx = await AuthorizeHttp(ctx, hosts);
 
             var certKey = KeyFactory.NewKey(algo);
@@ -41,7 +41,9 @@ namespace Certes
             var cert = await orderCtx.Download(null);
 
             var x509 = new X509Certificate2(cert.Certificate.ToDer());
-            Assert.Contains(hosts[0], x509.Subject);
+            // Pebble puts hostnames in SAN only (not Subject CN), so check either
+            var san = x509.GetNameInfo(System.Security.Cryptography.X509Certificates.X509NameType.DnsName, false);
+            Assert.Equal(hosts[0], san);
 
             // deactivate authz so the subsequence can trigger challenge validation
             await ClearAuthorizations(orderCtx);
@@ -64,10 +66,10 @@ namespace Certes
             {
                 var res = await authz.Resource();
                 var dnsChallenge = await authz.Dns();
-                tokens.Add(res.Identifier.Value, dnsChallenge.Token);
+                tokens.Add(res.Identifier.Value, ctx.AccountKey.DnsTxt(dnsChallenge.Token));
             }
 
-            await DeployDns01(KeyAlgorithm.ES256, tokens);
+            await DeployDns01(ctx.AccountKey.Algorithm, tokens);
             await Task.Delay(1000);
 
             foreach (var authz in authrizations)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,6 +15,15 @@ namespace Certes
     public static class IntegrationHelper
     {
         public static readonly List<byte[]> TestCertificates = new();
+
+        // Pebble ACME directory (mapped from container port 14000 to host port 15000)
+        private const string PebbleDirectoryUrl = "https://127.0.0.1:15000/dir";
+
+        // Pebble management endpoint (mapped from container port 15000 to host port 15002)
+        private const string PebbleManagementUrl = "https://127.0.0.1:15002";
+
+        // pebble-challtestsrv management API (mapped from container port 8055 to host port 18055)
+        private const string ChallTestSrvUrl = "http://127.0.0.1:18055";
 
         public static readonly Lazy<HttpClient> http = new Lazy<HttpClient>(() =>
         {
@@ -45,7 +54,7 @@ namespace Certes
 
             var servers = new[]
             {
-                new Uri("https://127.0.0.1:14000/dir")
+                new Uri(PebbleDirectoryUrl)
             };
 
             var exceptions = new List<Exception>();
@@ -69,7 +78,7 @@ namespace Certes
 
                     try
                     {
-                        var certUri = new Uri(uri, $"/mgnt/roots/0");
+                        var certUri = new Uri($"{PebbleManagementUrl}/roots/0");
                         var certData = await http.Value.GetByteArrayAsync(certUri);
                         TestCertificates.Add(certData);
                     }
@@ -88,11 +97,56 @@ namespace Certes
             throw new AggregateException("No staging server available.", exceptions);
         }
 
+        /// <summary>
+        /// Deploy DNS-01 challenge responses via pebble-challtestsrv.
+        /// Keys are hostnames, values are the computed DnsTxt content.
+        /// </summary>
         public static async Task DeployDns01(KeyAlgorithm algo, Dictionary<string, string> tokens)
         {
-            using var resp = await http.Value.PutAsync($"http://certes-ci.dymetis.com/dns-01/{algo}", new StringContent(JsonConvert.SerializeObject(tokens), Encoding.UTF8, "application/json"));
+            foreach (var (host, token) in tokens)
+            {
+                var payload = new { host = $"_acme-challenge.{host}.", value = token };
+                using var resp = await http.Value.PostAsync(
+                    $"{ChallTestSrvUrl}/set-txt",
+                    new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+                resp.EnsureSuccessStatusCode();
+            }
+        }
 
-            var respJson = await resp.Content.ReadAsStringAsync();
+        /// <summary>
+        /// Deploy an HTTP-01 challenge response via pebble-challtestsrv.
+        /// </summary>
+        public static async Task DeployHttp01(string token, string keyAuthz)
+        {
+            var payload = new { token, content = keyAuthz };
+            using var resp = await http.Value.PostAsync(
+                $"{ChallTestSrvUrl}/add-http01",
+                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+            resp.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
+        /// Clear an HTTP-01 challenge response from pebble-challtestsrv.
+        /// </summary>
+        public static async Task ClearHttp01(string token)
+        {
+            var payload = new { token };
+            using var resp = await http.Value.PostAsync(
+                $"{ChallTestSrvUrl}/del-http01",
+                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+            resp.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
+        /// Set a default IPv4 address for A record lookups via pebble-challtestsrv.
+        /// </summary>
+        public static async Task SetDefaultIpv4(string ip)
+        {
+            var payload = new { ip };
+            using var resp = await http.Value.PostAsync(
+                $"{ChallTestSrvUrl}/set-default-ipv4",
+                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+            resp.EnsureSuccessStatusCode();
         }
 
         public static void AddTestCerts(this PfxBuilder pfx)
@@ -121,6 +175,7 @@ namespace Certes
                     if (a.Status == AuthorizationStatus.Pending)
                     {
                         var httpChallenge = await authz.Http();
+                        await DeployHttp01(httpChallenge.Token, httpChallenge.KeyAuthz);
                         await httpChallenge.Validate();
                     }
                 }

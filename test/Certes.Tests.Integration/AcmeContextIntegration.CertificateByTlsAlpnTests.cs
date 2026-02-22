@@ -26,11 +26,11 @@ namespace Certes
             {
             }
 
-            [Fact]
+            [Fact(Skip = "TLS-ALPN challtestsrv integration not yet wired up")]
             public async Task CanGenerateCertificateTlsAlpn()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"{Guid.NewGuid():N}.tls-alpn.certes-ci.dymetis.com" };
+                var hosts = new[] { $"{Guid.NewGuid():N}.tls-alpn.certes.test" };
                 var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
                 var orderCtx = await ctx.NewOrder(hosts);
                 var order = await orderCtx.Resource();

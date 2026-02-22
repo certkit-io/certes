@@ -22,8 +22,8 @@ namespace Certes
             {
                 var dirUri = await GetAcmeUriV2();
 
-                var hosts = new[] { $"www-dns-es256.certes-ci.dymetis.com", $"mail-dns-es256.certes-ci.dymetis.com" };
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
+                var hosts = new[] { $"www-dns-es256.certes.test", $"mail-dns-es256.certes.test" };
+                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri), badNonceRetryCount: 5);
                 var orderCtx = await AuthzDns(ctx, hosts);
                 while (orderCtx == null)
                 {

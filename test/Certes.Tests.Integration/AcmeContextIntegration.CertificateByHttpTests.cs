@@ -22,8 +22,8 @@ namespace Certes
             public async Task CanGenerateCertificateHttp()
             {
                 var dirUri = await GetAcmeUriV2();
-                var hosts = new[] { $"www-http-es256.certes-ci.dymetis.com", $"mail-http-es256.certes-ci.dymetis.com" };
-                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri));
+                var hosts = new[] { $"www-http-es256.certes.test", $"mail-http-es256.certes.test" };
+                var ctx = new AcmeContext(dirUri, GetKeyV2(), http: GetAcmeHttpClient(dirUri), badNonceRetryCount: 5);
                 var orderCtx = await AuthorizeHttp(ctx, hosts);
 
                 var certKey = KeyFactory.NewKey(KeyAlgorithm.RS256);

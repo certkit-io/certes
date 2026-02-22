@@ -14,10 +14,10 @@ namespace Certes
             var accountKey = Helper.GetKeyV2(KeyAlgorithm.RS256);
             var httpClient = IntegrationHelper.GetAcmeHttpClient(acmeDir);
 
-            var acme = new AcmeContext(acmeDir, accountKey, httpClient);
+            var acme = new AcmeContext(acmeDir, accountKey, httpClient, badNonceRetryCount: 5);
             var account = await acme.Account();
 
-            var order = await acme.NewOrder(new[] { "www.certes-ci.dymetis.com" });
+            var order = await acme.NewOrder(new[] { "www.certes.test" });
 
             var authz = (await order.Authorizations()).First();
             var httpChallenge = await authz.Http();
@@ -30,6 +30,7 @@ namespace Certes
             var res = await authz.Resource();
             if (res.Status == AuthorizationStatus.Pending)
             {
+                await IntegrationHelper.DeployHttp01(token, keyAuthz);
                 await httpChallenge.Validate();
             }
 
@@ -38,7 +39,7 @@ namespace Certes
                 res = await authz.Resource();
             }
 
-            acme = new AcmeContext(acmeDir, accountKey, httpClient);
+            acme = new AcmeContext(acmeDir, accountKey, httpClient, badNonceRetryCount: 5);
             order = acme.Order(orderUri);
             var privateKey = KeyFactory.NewKey(KeyAlgorithm.ES256);
             var cert = await order.Generate(new CsrInfo
@@ -48,7 +49,7 @@ namespace Certes
                 Locality = "Toronto",
                 Organization = "Certes",
                 OrganizationUnit = "Dev",
-                CommonName = "www.certes-ci.dymetis.com",
+                CommonName = "www.certes.test",
             }, privateKey, null);
 
             var pfxBuilder = cert.ToPfx(privateKey);

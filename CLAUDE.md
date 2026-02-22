@@ -40,7 +40,7 @@ The package version can also be set via the `CERTES_PACKAGE_VERSION` environment
 # Unit tests
 dotnet test test/Certes.Tests/Certes.Tests.csproj -m:1
 
-# Integration tests (requires local Pebble ACME server at https://127.0.0.1:14000/dir)
+# Integration tests (requires Pebble + challtestsrv, see below)
 dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1
 
 # Run a single test
@@ -50,7 +50,23 @@ dotnet test test/Certes.Tests/Certes.Tests.csproj -m:1 --filter "FullyQualifiedN
 dotnet test test/Certes.Tests/Certes.Tests.csproj --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 ```
 
-Integration tests may reference stale external infrastructure (`certes-ci.dymetis.com`) and can fail for infrastructure reasons unrelated to code correctness. Prefer unit tests for validating new logic.
+### Integration Test Infrastructure
+
+Integration tests run against a local [Pebble](https://github.com/letsencrypt/pebble) ACME server with `pebble-challtestsrv` for HTTP-01 and DNS-01 challenge validation. Start/stop with:
+
+```bash
+cd test
+docker compose up -d    # Start Pebble + challtestsrv
+docker compose down     # Stop and clean up
+```
+
+| Service | Host Port | Purpose |
+|---------|-----------|---------|
+| Pebble ACME directory | 15000 | `https://127.0.0.1:15000/dir` |
+| Pebble management | 15002 | Root cert endpoint |
+| challtestsrv management | 18055 | Deploy HTTP-01/DNS-01 challenge responses |
+
+Test hostnames use `.certes.test` (resolved by challtestsrv). Configuration lives in `test/pebble-config.json`. The TLS-ALPN test is currently skipped.
 
 ## Architecture
 

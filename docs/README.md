@@ -159,6 +159,26 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
+## Testing
+
+Unit tests run standalone. Integration tests require a local Pebble ACME server with `pebble-challtestsrv`:
+
+```bash
+# Start the test infrastructure
+cd test
+docker compose up -d
+
+# Run unit tests
+dotnet test test/Certes.Tests/Certes.Tests.csproj -m:1
+
+# Run integration tests
+dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1
+
+# Stop the test infrastructure
+cd test
+docker compose down
+```
+
 ## How to release
 
 For this fork, use fork-specific package identities to avoid conflicts with upstream:
