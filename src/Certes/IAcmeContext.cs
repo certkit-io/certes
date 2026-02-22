@@ -97,10 +97,20 @@ namespace Certes
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <param name="profile">The certificate profile to request.</param>
+        /// <param name="replaces">The ARI CertID of the certificate being replaced (RFC 9773).</param>
         /// <returns>
         /// The order context created.
         /// </returns>
-        Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, string profile = null);
+        Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, string profile = null, string replaces = null);
+
+        /// <summary>
+        /// Gets the ACME Renewal Information (ARI) for a certificate (RFC 9773).
+        /// </summary>
+        /// <param name="certId">The ARI CertID (base64url(AKI) + "." + base64url(serial)).</param>
+        /// <returns>
+        /// The renewal information response, or <c>null</c> if the server does not support ARI.
+        /// </returns>
+        Task<RenewalInfoResponse> GetRenewalInfo(string certId);
 
         /// <summary>
         /// Signs the data with account key.

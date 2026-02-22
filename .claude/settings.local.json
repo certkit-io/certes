@@ -14,7 +14,12 @@
       "Bash(cd /c/Source/CertKitOther/certes/test && docker compose down 2>&1 && docker compose up -d 2>&1)",
       "Bash(sleep 3:*)",
       "Bash(grep:*)",
-      "Bash(grep:*1)"
+      "WebFetch(domain:datatracker.ietf.org)",
+      "Bash(curl:*)",
+      "Bash(cd /c/Source/CertKitOther/certes && dotnet build Certes.sln -m:1 -p:SkipSigning=true 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests/Certes.Tests.csproj -m:1 -p:SkipSigning=true 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1 -p:SkipSigning=true --filter \"FullyQualifiedName~RenewalInfo\" 2>&1)",
+      "Bash(curl -sk https://127.0.0.1:15000/dir 2>&1 | python -m json.tool 2>/dev/null || curl -sk https://127.0.0.1:15000/dir 2>&1)"
     ]
   }
 }

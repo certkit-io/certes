@@ -16,6 +16,7 @@ namespace Certes.Acme.Resource
                 NewAccount = new Uri("http://NewAccount.is.working"),
                 NewOrder = new Uri("http://NewOrder.is.working"),
                 Meta = new DirectoryMeta(new Uri("http://certes.is.working"), null, null, null),
+                RenewalInfo = new Uri("http://RenewalInfo.is.working"),
             };
 
             var model = new Directory(
@@ -24,7 +25,8 @@ namespace Certes.Acme.Resource
                 data.NewOrder,
                 data.RevokeCert,
                 data.KeyChange,
-                data.Meta);
+                data.Meta,
+                data.RenewalInfo);
 
             Assert.Equal(data.NewNonce, model.NewNonce);
             Assert.Equal(data.NewAccount, model.NewAccount);
@@ -32,6 +34,7 @@ namespace Certes.Acme.Resource
             Assert.Equal(data.RevokeCert, model.RevokeCert);
             Assert.Equal(data.KeyChange, model.KeyChange);
             Assert.Equal(data.Meta.Website, model.Meta?.Website);
+            Assert.Equal(data.RenewalInfo, model.RenewalInfo);
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Certes.Cli.Commands
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
-            ctxMock.Setup(m => m.NewOrder(It.IsAny<IList<string>>(), null, null, null))
+            ctxMock.Setup(m => m.NewOrder(It.IsAny<IList<string>>(), null, null, null, null))
                 .ReturnsAsync(orderMock.Object);
 
             var fileMock = new Mock<IFileUtil>(MockBehavior.Strict);
@@ -61,7 +61,7 @@ namespace Certes.Cli.Commands
                 }, JsonSettings),
                 JsonConvert.SerializeObject(ret, JsonSettings));
 
-            ctxMock.Verify(m => m.NewOrder(new[] { "a.com", "b.com" }, null, null, null), Times.Once);
+            ctxMock.Verify(m => m.NewOrder(new[] { "a.com", "b.com" }, null, null, null, null), Times.Once);
         }
     }
 }

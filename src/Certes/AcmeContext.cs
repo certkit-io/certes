@@ -184,10 +184,11 @@ namespace Certes
         /// <param name="notBefore">Th value of not before field for the certificate.</param>
         /// <param name="notAfter">The value of not after field for the certificate.</param>
         /// <param name="profile">The certificate profile to request.</param>
+        /// <param name="replaces">The ARI CertID of the certificate being replaced (RFC 9773).</param>
         /// <returns>
         /// The order context created.
         /// </returns>
-        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, string profile = null)
+        public async Task<IOrderContext> NewOrder(IList<string> identifiers, DateTimeOffset? notBefore = null, DateTimeOffset? notAfter = null, string profile = null, string replaces = null)
         {
             var endpoint = await this.GetResourceUri(d => d.NewOrder);
 
@@ -199,10 +200,32 @@ namespace Certes
                 NotBefore = notBefore,
                 NotAfter = notAfter,
                 Profile = profile,
+                Replaces = replaces,
             };
 
             var order = await HttpClient.Post<Order>(this, endpoint, body, true);
             return new OrderContext(this, order.Location);
+        }
+
+        /// <summary>
+        /// Gets the ACME Renewal Information (ARI) for a certificate (RFC 9773).
+        /// </summary>
+        /// <param name="certId">The ARI CertID (base64url(AKI) + "." + base64url(serial)).</param>
+        /// <returns>
+        /// The renewal information response, or <c>null</c> if the server does not support ARI.
+        /// </returns>
+        public async Task<RenewalInfoResponse> GetRenewalInfo(string certId)
+        {
+            var renewalInfoUri = await this.GetResourceUri(d => d.RenewalInfo, optional: true);
+            if (renewalInfoUri == null)
+            {
+                return null;
+            }
+
+            var baseStr = renewalInfoUri.AbsoluteUri.TrimEnd('/') + "/";
+            var uri = new Uri(baseStr + certId);
+            var resp = await HttpClient.Get<RenewalInfo>(uri);
+            return new RenewalInfoResponse(resp.Resource, resp.RetryAfter);
         }
 
         /// <summary>

@@ -105,6 +105,15 @@ namespace Certes.Acme.Resource
         public string Profile { get; set; }
 
         /// <summary>
+        /// Gets or sets the ARI certificate identifier that this order replaces (RFC 9773).
+        /// </summary>
+        /// <value>
+        /// The ARI CertID string of the certificate being replaced.
+        /// </value>
+        [JsonProperty("replaces")]
+        public string Replaces { get; set; }
+
+        /// <summary>
         /// Represents the payload to finalize an order.
         /// </summary>
         /// <seealso cref="Certes.Acme.Resource.Order" />
