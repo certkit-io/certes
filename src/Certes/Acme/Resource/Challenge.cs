@@ -63,5 +63,14 @@ namespace Certes.Acme.Resource
         /// </value>
         [JsonProperty("token")]
         public string Token { get; set; }
+
+        /// <summary>
+        /// Gets or sets the issuer domain names for dns-persist-01 challenges.
+        /// </summary>
+        /// <value>
+        /// The issuer domain names.
+        /// </value>
+        [JsonProperty("issuer-domain-names")]
+        public IList<string> IssuerDomainNames { get; set; }
     }
 }

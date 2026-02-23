@@ -16,6 +16,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{556F2BFB-DE9B-4673-BADC-63C365DA2A55}"
+	ProjectSection(SolutionItems) = preProject
+		test\docker-compose.yml = test\docker-compose.yml
+		test\pebble-config.json = test\pebble-config.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
 	ProjectSection(SolutionItems) = preProject

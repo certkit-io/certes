@@ -19,7 +19,10 @@
       "Bash(cd /c/Source/CertKitOther/certes && dotnet build Certes.sln -m:1 -p:SkipSigning=true 2>&1)",
       "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests/Certes.Tests.csproj -m:1 -p:SkipSigning=true 2>&1)",
       "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1 -p:SkipSigning=true --filter \"FullyQualifiedName~RenewalInfo\" 2>&1)",
-      "Bash(curl -sk https://127.0.0.1:15000/dir 2>&1 | python -m json.tool 2>/dev/null || curl -sk https://127.0.0.1:15000/dir 2>&1)"
+      "Bash(curl -sk https://127.0.0.1:15000/dir 2>&1 | python -m json.tool 2>/dev/null || curl -sk https://127.0.0.1:15000/dir 2>&1)",
+      "Bash(cd /c/Source/CertKitOther/certes && curl -sk https://127.0.0.1:15000/dir | python -m json.tool 2>&1)",
+      "Bash(head:*)",
+      "Bash(cd /c/Source/CertKitOther/certes && dotnet test test/Certes.Tests.Integration/Certes.Tests.Integration.csproj -m:1 -p:SkipSigning=true --filter \"FullyQualifiedName~DnsPersist\" -v n 2>&1)"
     ]
   }
 }

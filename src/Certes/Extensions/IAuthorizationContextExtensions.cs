@@ -27,6 +27,14 @@ namespace Certes
             authorizationContext.Challenge(ChallengeTypes.Dns01);
 
         /// <summary>
+        /// Gets the DNS persistent challenge.
+        /// </summary>
+        /// <param name="authorizationContext">The authorization context.</param>
+        /// <returns>The DNS persistent challenge, <c>null</c> if no DNS persistent challenge available.</returns>
+        public static Task<IChallengeContext> DnsPersist(this IAuthorizationContext authorizationContext) =>
+            authorizationContext.Challenge(ChallengeTypes.DnsPersist01);
+
+        /// <summary>
         /// Gets the TLS ALPN challenge.
         /// </summary>
         /// <param name="authorizationContext">The authorization context.</param>

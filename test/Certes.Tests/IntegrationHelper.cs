@@ -114,6 +114,20 @@ namespace Certes
         }
 
         /// <summary>
+        /// Deploy a dns-persist-01 challenge response via pebble-challtestsrv.
+        /// Sets a TXT record at _validation-persist.{host}. with value {issuerDomain};accounturi={accountUrl}
+        /// </summary>
+        public static async Task DeployDnsPersist01(string host, string issuerDomain, Uri accountUrl)
+        {
+            var value = $"{issuerDomain};accounturi={accountUrl}";
+            var payload = new { host = $"_validation-persist.{host}.", value };
+            using var resp = await http.Value.PostAsync(
+                $"{ChallTestSrvUrl}/set-txt",
+                new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
+            resp.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
         /// Deploy an HTTP-01 challenge response via pebble-challtestsrv.
         /// </summary>
         public static async Task DeployHttp01(string token, string keyAuthz)
