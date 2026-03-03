@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -119,8 +119,8 @@ namespace Certes
         /// </summary>
         public static async Task DeployDnsPersist01(string host, string issuerDomain, Uri accountUrl)
         {
-            var value = $"{issuerDomain};accounturi={accountUrl}";
-            var payload = new { host = $"_validation-persist.{host}.", value };
+            var value = DnsPersist.TxtRecordValue(issuerDomain, accountUrl);
+            var payload = new { host = $"{DnsPersist.TxtRecordName(host)}.", value };
             using var resp = await http.Value.PostAsync(
                 $"{ChallTestSrvUrl}/set-txt",
                 new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json"));
