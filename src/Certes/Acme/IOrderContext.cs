@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
 
@@ -28,7 +28,8 @@ namespace Certes.Acme
         /// Downloads the certificate chain in PEM.
         /// </summary>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
+        /// <param name="numRetries">The number of retries while waiting for the certificate URI to become available.</param>
         /// <returns>The certificate chain in PEM.</returns>
-        Task<CertificateChain> Download(string preferredChain = null);
+        Task<CertificateChain> Download(string preferredChain = null, int numRetries = 1);
     }
 }

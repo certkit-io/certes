@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CommandLine;
 using System.Linq;
 using System.Text;
@@ -48,7 +48,7 @@ namespace Certes.Cli.Commands
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)))).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)), 1)).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -70,7 +70,7 @@ namespace Certes.Cli.Commands
             Assert.Equal(certLoc.ToString(), $"{ret.location}");
             Assert.NotNull(ret.pfx);
 
-            orderMock.Verify(m => m.Download(""), Times.Once);
+            orderMock.Verify(m => m.Download("", 1), Times.Once);
             errOutput.Clear();
             stdOutput.Clear();
 
@@ -94,7 +94,7 @@ namespace Certes.Cli.Commands
 
             // Export PFX with external issuers
             var leafCert = certChain.Certificate.ToPem();
-            orderMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(leafCert));
+            orderMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(leafCert));
 
             var issuersPem = string.Join(Environment.NewLine, certChain.Issuers.Select(i => i.ToPem()));
             fileMock.Setup(m => m.ReadAllText("./issuers.pem")).ReturnsAsync(issuersPem);

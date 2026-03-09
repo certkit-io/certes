@@ -138,6 +138,12 @@ Download the certificate PEM signed with a specific root certificate
 var certChain = await order.Download("ISRG X1 Root");
 ```
 
+Retry the order lookup if the certificate URI is not yet available.
+
+```C#
+var certChain = await order.Download(numRetries: 3);
+```
+
 Finalize and download the certificate.
 
 ```C#

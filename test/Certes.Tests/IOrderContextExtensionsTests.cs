@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Certes.Acme;
@@ -16,7 +16,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
             {
                 Identifiers = new[] {
@@ -60,7 +60,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
             {
                 Identifiers = new[] {
@@ -104,7 +104,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.SetupSequence(m => m.Resource())
                 .ReturnsAsync(new Order
                 {
@@ -311,7 +311,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
             {
                 Identifiers = new[] {
@@ -343,7 +343,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.SetupSequence(m => m.Resource())
                 .ReturnsAsync(new Order
                 {

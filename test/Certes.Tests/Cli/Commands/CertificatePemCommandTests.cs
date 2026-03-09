@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CommandLine;
 using System.IO;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace Certes.Cli.Commands
 
             var orderMock = new Mock<IOrderContext>(MockBehavior.Strict);
             orderMock.Setup(m => m.Resource()).ReturnsAsync(order);
-            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)))).ReturnsAsync(certChain);
+            orderMock.Setup(m => m.Download(It.Is<string>(s => string.IsNullOrWhiteSpace(s)), 1)).ReturnsAsync(certChain);
 
             var ctxMock = new Mock<IAcmeContext>(MockBehavior.Strict);
             ctxMock.Setup(m => m.GetDirectory()).ReturnsAsync(MockDirectoryV2);
@@ -73,7 +73,7 @@ namespace Certes.Cli.Commands
                 }),
                 JsonConvert.SerializeObject(ret));
 
-            orderMock.Verify(m => m.Download(""), Times.Once);
+            orderMock.Verify(m => m.Download("", 1), Times.Once);
             errOutput.Clear();
             stdOutput.Clear();
 

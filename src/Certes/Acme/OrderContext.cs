@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,15 +53,27 @@ namespace Certes.Acme
         /// <summary>
         /// Downloads the certificate chain in PEM.
         /// <param name="preferredChain">The preferred Root Certificate</param>
+        /// <param name="numRetries">The number of retries while waiting for the certificate URI to become available.</param>
         /// </summary>
         /// <returns>The certificate chain in PEM.</returns>
-        public async Task<CertificateChain> Download(string preferredChain = null)
+        public async Task<CertificateChain> Download(string preferredChain = null, int numRetries = 1)
         {
             var order = await Resource();
+            while (order?.Certificate == null && numRetries-- > 0)
+            {
+                await DelayBeforeRetry(RetryAfter);
+                order = await Resource();
+            }
+
+            if (order?.Certificate == null)
+            {
+                throw new AcmeException($"Certificate URI is not available for order '{Location}'.");
+            }
+
             var resp = await Context.HttpClient.Post<string>(Context, order.Certificate, null, false);
 
             var defaultChain = new CertificateChain(resp.Resource);
-            if (defaultChain.MatchesPreferredChain(preferredChain) || !resp.Links.Contains("alternate"))
+            if (defaultChain.MatchesPreferredChain(preferredChain) || resp.Links == null || !resp.Links.Contains("alternate"))
                 return defaultChain;
 
             var alternateLinks = resp.Links["alternate"].ToList();
@@ -77,5 +89,14 @@ namespace Certes.Acme
             return defaultChain;
         }
 
+        protected virtual Task DelayBeforeRetry(int retryAfterSeconds)
+        {
+            return Task.Delay(TimeSpan.FromSeconds(GetRetryDelaySeconds(retryAfterSeconds)));
+        }
+
+        internal static int GetRetryDelaySeconds(int retryAfter)
+        {
+            return Math.Min(Math.Max(retryAfter, 1), 10);
+        }
     }
 }
