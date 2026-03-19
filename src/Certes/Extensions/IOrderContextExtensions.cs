@@ -89,7 +89,7 @@ namespace Certes
                 throw new AcmeException(Strings.ErrorFinalizeFailed);
             }
 
-            return await context.Download(preferredChain);
+            return await context.Download(preferredChain, retryCount);
         }
 
         /// <summary>
