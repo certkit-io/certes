@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Certes.Acme;
 using Certes.Jws;
 using Certes.Pkcs;
@@ -43,34 +44,34 @@ namespace Certes
         /// <returns>The encoded certificate chain.</returns>
         public static string ToPem(this CertificateChain certificateChain, IKey certKey = null)
         {
-            var certStore = new CertificateStore();
+            var sb = new StringBuilder();
+            if (certKey != null)
+            {
+                sb.Append(WithTrailingNewline(certKey.ToPem()));
+            }
+
+            sb.Append(WithTrailingNewline(certificateChain.Certificate.ToPem()));
             foreach (var issuer in certificateChain.Issuers)
             {
-                certStore.Add(issuer.ToDer());
+                sb.Append(WithTrailingNewline(issuer.ToPem()));
             }
-
-            var issuers = certStore.GetIssuers(certificateChain.Certificate.ToDer());
-
-            using (var writer = new StringWriter())
-            {
-                if (certKey != null)
-                {
-                    writer.WriteLine(certKey.ToPem().TrimEnd());
-                }
-
-                writer.WriteLine(certificateChain.Certificate.ToPem().TrimEnd());
-
-                var certParser = new X509CertificateParser();
-                var pemWriter = new PemWriter(writer);
-                foreach (var issuer in issuers)
-                {
-                    var cert = certParser.ReadCertificate(issuer);
-                    pemWriter.WriteObject(cert);
-                }
-
-                return writer.ToString();
-            }
+            return sb.ToString();
         }
+
+        /// <summary>
+        /// Determines whether the certificate is self-signed (Subject == Issuer).
+        /// </summary>
+        /// <param name="encodable">A PEM/DER-encodable certificate.</param>
+        /// <returns><c>true</c> if the certificate's subject and issuer are equal.</returns>
+        public static bool IsSelfSigned(this IEncodable encodable)
+        {
+            var parser = new X509CertificateParser();
+            var cert = parser.ReadCertificate(encodable.ToDer());
+            return cert.SubjectDN.Equivalent(cert.IssuerDN);
+        }
+
+        private static string WithTrailingNewline(string pem) =>
+            string.IsNullOrEmpty(pem) ? pem : pem.TrimEnd('\r', '\n') + "\n";
 
         /// <summary>
         /// Computes the ARI CertID for a certificate per RFC 9773.
