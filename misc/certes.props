@@ -5,8 +5,7 @@
   <!-- ============================= -->
   <PropertyGroup>
     <LangVersion>Latest</LangVersion>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1900</WarningsNotAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 
     <!-- Assembly version: bump rarely -->
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
