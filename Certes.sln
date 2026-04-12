@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E9E7371E-AB81-4ECF-9684-2ACB1EF7FF67}"
 	ProjectSection(SolutionItems) = preProject
 		docs\APIv2.md = docs\APIv2.md
-		docs\CHANGELOG.md = docs\CHANGELOG.md
 		docs\implementation-status.md = docs\implementation-status.md
 		LICENSE = LICENSE
 		docs\README.md = docs\README.md
@@ -23,20 +22,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{556F2BFB-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{E420B696-0E51-40E1-B534-96E66C2C27F5}"
 	ProjectSection(SolutionItems) = preProject
-		.appveyor.yml = .appveyor.yml
-		.bettercodehub.yml = .bettercodehub.yml
-		.codecov.yml = .codecov.yml
 		.editorconfig = .editorconfig
-		.travis.yml = .travis.yml
-		azure-pipelines.yml = azure-pipelines.yml
 		build.ps1 = build.ps1
 		misc\certes.props = misc\certes.props
 		publish-nuget.ps1 = publish-nuget.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes", "src\Certes\Certes.csproj", "{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Cli", "src\Certes.Cli\Certes.Cli.csproj", "{B416791A-F073-446B-87B8-0D63049DB1A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Certes.Tests", "test\Certes.Tests\Certes.Tests.csproj", "{67194186-A678-40D3-BEB2-A5572539C423}"
 EndProject
@@ -52,10 +44,6 @@ Global
 		{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AA85BF4-2A4F-42C8-A107-82B22C640C4E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B416791A-F073-446B-87B8-0D63049DB1A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B416791A-F073-446B-87B8-0D63049DB1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B416791A-F073-446B-87B8-0D63049DB1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B416791A-F073-446B-87B8-0D63049DB1A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{67194186-A678-40D3-BEB2-A5572539C423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67194186-A678-40D3-BEB2-A5572539C423}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67194186-A678-40D3-BEB2-A5572539C423}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,7 +58,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7AA85BF4-2A4F-42C8-A107-82B22C640C4E} = {7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}
-		{B416791A-F073-446B-87B8-0D63049DB1A8} = {7B11358C-CCDB-4A64-8CAF-9AA29AFD7DE3}
 		{67194186-A678-40D3-BEB2-A5572539C423} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 		{741DD8E1-DDCB-4D34-9E65-FEE6AC861022} = {556F2BFB-DE9B-4673-BADC-63C365DA2A55}
 	EndGlobalSection

@@ -84,22 +84,13 @@ Key subsystems:
 - `Pkcs/` — PKCS operations for certificate CSR and PFX generation
 - `Json/` — ACME-specific JSON serialization with Newtonsoft.Json
 
-### CLI Tool (`src/Certes.Cli/`)
-
-- **Autofac** DI with assembly scanning auto-registers all `ICliCommand` implementations at startup (`Program.ConfigureContainer()`)
-- Commands group into `CommandGroup` categories (Account, Order, Certificate, etc.)
-- **System.CommandLine** (beta) handles argument parsing and help generation
-- **NLog** for logging; enable debug output via `CERTES_DEBUG=true`
-
 ## Package Identity (Fork-Specific)
 
 | Item | Value |
 |------|-------|
 | Library Package ID | `CertKit.Certes` |
-| CLI Package ID | `dotnet-certkit-certes` |
-| CLI command name | `certes-certkit` |
 
-These differ from upstream `Certes` to prevent conflicts.
+This differs from upstream `Certes` to prevent conflicts.
 
 ## Code Style
 

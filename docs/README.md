@@ -135,29 +135,9 @@ Check the [APIs](APIv2.md) for more details.
 
 *For ACME v1, please see [the doc here](README.v1.md).*
 
-## CLI
-
-The CLI is available as a dotnet global tool.
-[.NET Core Runtime 2.1+](https://www.microsoft.com/net/download/dotnet-core/runtime-2.1.0)
- is required to use dotnet tools.
-
-To install Certes CLI *(you may need to restart the console session if this is the first dotnet tool installed)*
-```DOS
-dotnet tool install --global dotnet-certes
-```
-
-See [CLI usage](CLI.md), or simply use the `--help` option to get started
-```DOS
-certes --help
-```
-
-Also check this [AppVeyor script][AppVeyorCliSample] for renewing certificates on Azure apps.
-
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags](https://github.com/fszlin/certes/tags) on this repository. 
-
-Also check the [changelog](CHANGELOG.md) to see what's we are working on.
 
 ## Testing
 
@@ -181,16 +161,13 @@ docker compose down
 
 ## How to release
 
-For this fork, use fork-specific package identities to avoid conflicts with upstream:
+For this fork, use the fork-specific package identity to avoid conflicts with upstream:
 - Library package: `CertKit.Certes`
-- CLI tool package: `dotnet-certkit-certes`
-- CLI command name: `certes-certkit`
 
 Pack using `build.ps1` (auto-increments version and copies to `.nuget-local` feed):
 
 ```PowerShell
 .\build.ps1
-.\build.ps1 -Project ".\src\Certes.Cli\Certes.Cli.csproj"
 
 # With an explicit version
 .\build.ps1 -Version "3.0.0-certkit.5"
@@ -203,7 +180,6 @@ Or pack directly with dotnet:
 
 ```PowerShell
 dotnet pack src/Certes/Certes.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
-dotnet pack src/Certes.Cli/Certes.Cli.csproj -c Release -p:CERTES_PACKAGE_VERSION=3.0.0-certkit.1
 ```
 
 ### Publishing to GitHub Packages
@@ -216,16 +192,7 @@ $env:GITHUB_TOKEN = "ghp_..."
 .\publish-nuget.ps1 -Package ".\.nuget-local\CertKit.Certes.3.0.0-certkit.1.nupkg"
 ```
 
-## CI Status
+## Package Status
 [![NuGet](https://img.shields.io/nuget/vpre/certes.svg?label=Certes)](https://www.nuget.org/packages/certes/absoluteLatest/)
 [![NuGet](https://img.shields.io/nuget/dt/certes.svg)](https://www.nuget.org/packages/certes/)
-[![NuGet](https://img.shields.io/nuget/vpre/dotnet-certes.svg?label=CLI)](https://www.nuget.org/packages/dotnet-certes/absoluteLatest/)
-[![NuGet](https://img.shields.io/nuget/dt/dotnet-certes.svg)](https://www.nuget.org/packages/dotnet-certes/)
 
-
-[![AppVeyor](https://img.shields.io/appveyor/ci/fszlin/certes/main.svg)](https://ci.appveyor.com/project/fszlin/certes)
-[![AppVeyor](https://img.shields.io/appveyor/tests/fszlin/certes/main.svg)](https://ci.appveyor.com/project/fszlin/certes/build/tests)
-[![codecov](https://codecov.io/gh/fszlin/certes/branch/main/graph/badge.svg)](https://codecov.io/gh/fszlin/certes)
-[![BCH compliance](https://bettercodehub.com/edge/badge/fszlin/certes?branch=main)](https://bettercodehub.com/results/fszlin/certes)
-
-[AppVeyorCliSample]: https://github.com/fszlin/lo0.in/blob/master/.appveyor.yml#L43
