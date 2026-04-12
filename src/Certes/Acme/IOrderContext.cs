@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
@@ -31,5 +32,14 @@ namespace Certes.Acme
         /// <param name="numRetries">The number of retries while waiting for the certificate URI to become available.</param>
         /// <returns>The certificate chain in PEM.</returns>
         Task<CertificateChain> Download(string preferredChain = null, int numRetries = 1);
+
+        /// <summary>
+        /// Downloads the certificate chain in PEM, retrying until the certificate URI
+        /// becomes available or <paramref name="maxWait"/> elapses.
+        /// </summary>
+        /// <param name="maxWait">Maximum time to spend waiting for the certificate URI.</param>
+        /// <param name="preferredChain">The preferred Root Certificate.</param>
+        /// <returns>The certificate chain in PEM.</returns>
+        Task<CertificateChain> Download(TimeSpan maxWait, string preferredChain = null);
     }
 }

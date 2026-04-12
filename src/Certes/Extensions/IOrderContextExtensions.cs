@@ -80,7 +80,7 @@ namespace Certes
 
             while ((order == null || order.Status == OrderStatus.Processing) && retryCount-- > 0)
             {
-                await Task.Delay(TimeSpan.FromSeconds(Math.Max(context.RetryAfter, 1)));
+                await Task.Delay(TimeSpan.FromSeconds(OrderContext.GetRetryDelaySeconds(context.RetryAfter)));
                 order = await context.Resource();
             }
 
@@ -90,6 +90,47 @@ namespace Certes
             }
 
             return await context.Download(preferredChain, retryCount);
+        }
+
+        /// <summary>
+        /// Finalizes and downloads the certificate for the order, retrying until
+        /// the order completes or <paramref name="maxWait"/> elapses.
+        /// </summary>
+        /// <param name="context">The order context.</param>
+        /// <param name="csr">The CSR.</param>
+        /// <param name="key">The private key for the certificate.</param>
+        /// <param name="maxWait">Maximum time to spend waiting for finalization and download.</param>
+        /// <param name="preferredChain">The preferred Root Certificate.</param>
+        /// <returns>The certificate generated.</returns>
+        public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, TimeSpan maxWait, string preferredChain = null)
+        {
+            var deadline = DateTime.UtcNow + maxWait;
+
+            var order = await context.Resource();
+            if (order.Status != OrderStatus.Ready && // draft-11
+                order.Status != OrderStatus.Pending) // pre draft-11
+            {
+                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
+            }
+
+            order = await context.Finalize(csr, key);
+
+            while ((order == null || order.Status == OrderStatus.Processing) && DateTime.UtcNow < deadline)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(OrderContext.GetRetryDelaySeconds(context.RetryAfter)));
+                order = await context.Resource();
+            }
+
+            if (order?.Status != OrderStatus.Valid)
+            {
+                throw new AcmeException(Strings.ErrorFinalizeFailed);
+            }
+
+            var remaining = deadline - DateTime.UtcNow;
+            if (remaining < TimeSpan.Zero)
+                remaining = TimeSpan.Zero;
+
+            return await context.Download(remaining, preferredChain);
         }
 
         /// <summary>

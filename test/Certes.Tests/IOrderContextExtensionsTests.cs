@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -104,7 +105,7 @@ namespace Certes
             var pem = File.ReadAllText("./Data/cert-es256.pem");
 
             var orderCtxMock = new Mock<IOrderContext>();
-            orderCtxMock.Setup(m => m.Download(null, 1)).ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Download(null, It.IsAny<int>())).ReturnsAsync(new CertificateChain(pem));
             orderCtxMock.SetupSequence(m => m.Resource())
                 .ReturnsAsync(new Order
                 {
@@ -390,6 +391,71 @@ namespace Certes
                     CountryName = "C",
                     CommonName = "www.certes.com",
                 }, key));
+        }
+
+        [Fact]
+        public async Task CanGenerateWithMaxWait()
+        {
+            var pem = File.ReadAllText("./Data/cert-es256.pem");
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.Setup(m => m.Download(It.IsAny<TimeSpan>(), null))
+                .ReturnsAsync(new CertificateChain(pem));
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
+            {
+                Identifiers = new[] {
+                    new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                },
+                Status = OrderStatus.Ready,
+            });
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
+                .ReturnsAsync(new Order
+                {
+                    Identifiers = new[] {
+                        new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                    },
+                    Status = OrderStatus.Valid,
+                });
+
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            var certInfo = await orderCtxMock.Object.Generate(new CsrInfo
+            {
+                CountryName = "C",
+                CommonName = "www.certes.com",
+            }, key, TimeSpan.FromMinutes(1));
+
+            Assert.Equal(
+                pem.Where(c => !char.IsWhiteSpace(c)),
+                certInfo.Certificate.ToPem().Where(c => !char.IsWhiteSpace(c)));
+        }
+
+        [Fact]
+        public async Task ThrowWhenMaxWaitExceeded()
+        {
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
+            {
+                Identifiers = new[] {
+                    new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                },
+                Status = OrderStatus.Ready,
+            });
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
+                .ReturnsAsync(new Order
+                {
+                    Identifiers = new[] {
+                        new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                    },
+                    Status = OrderStatus.Processing,
+                });
+
+            var key = KeyFactory.NewKey(KeyAlgorithm.RS256);
+            await Assert.ThrowsAsync<AcmeException>(() =>
+                orderCtxMock.Object.Generate(new CsrInfo
+                {
+                    CountryName = "C",
+                    CommonName = "www.certes.com",
+                }, key, TimeSpan.Zero));
         }
 
     }

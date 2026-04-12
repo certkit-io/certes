@@ -65,6 +65,25 @@ namespace Certes.Acme
                 order = await Resource();
             }
 
+            return await DownloadCore(order, preferredChain);
+        }
+
+        /// <inheritdoc/>
+        public async Task<CertificateChain> Download(TimeSpan maxWait, string preferredChain = null)
+        {
+            var deadline = DateTime.UtcNow + maxWait;
+            var order = await Resource();
+            while (order?.Certificate == null && DateTime.UtcNow < deadline)
+            {
+                await DelayBeforeRetry(RetryAfter);
+                order = await Resource();
+            }
+
+            return await DownloadCore(order, preferredChain);
+        }
+
+        private async Task<CertificateChain> DownloadCore(Resource.Order order, string preferredChain)
+        {
             if (order?.Certificate == null)
             {
                 throw new AcmeException($"Certificate URI is not available for order '{Location}'.");
