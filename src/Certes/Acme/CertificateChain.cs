@@ -43,6 +43,15 @@ namespace Certes.Acme
         public IList<IEncodable> Issuers { get; }
 
         /// <summary>
+        /// Gets the issuers excluding any self-signed root certificate.
+        /// </summary>
+        /// <value>
+        /// The intermediate certificates in the chain.
+        /// </value>
+        public IList<IEncodable> IssuersWithoutRoot =>
+            Issuers.Where(i => !CertificateChainExtensions.IsSelfSigned(i)).ToArray();
+
+        /// <summary>
         /// Checks if the certificate chain is signed by a preferred issuer.
         /// </summary>
         /// <param name="preferredChain">The name of the preferred issuer</param>

@@ -76,9 +76,25 @@ namespace Certes.Acme
             var chain = new CertificateChain(pem);
 
             Assert.Equal(2, chain.Issuers.Count);
-            var nonRoots = chain.Issuers.Where(x => !x.IsSelfSigned()).ToList();
-            Assert.Single(nonRoots);
-            Assert.False(nonRoots[0].IsSelfSigned());
+            Assert.Single(chain.IssuersWithoutRoot);
+            Assert.False(chain.IssuersWithoutRoot[0].IsSelfSigned());
+        }
+
+        [Fact]
+        public void IssuersWithoutRoot_ReturnsAllIssuersWhenNoRootPresent()
+        {
+            var pem =
+                string.Join(Environment.NewLine,
+                File.ReadAllText("./Data/leaf-cert.pem").Trim(),
+                File.ReadAllText("./Data/test-ca2.pem").Trim());
+
+            var chain = new CertificateChain(pem);
+
+            Assert.Single(chain.Issuers);
+            Assert.Single(chain.IssuersWithoutRoot);
+            Assert.Equal(
+                chain.Issuers[0].ToPem().Replace("\r", "").Trim(),
+                chain.IssuersWithoutRoot[0].ToPem().Replace("\r", "").Trim());
         }
     }
 }

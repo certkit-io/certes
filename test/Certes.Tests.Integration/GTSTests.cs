@@ -175,7 +175,7 @@ namespace Certes
             var pem = cert.ToPem();
             Assert.False(string.IsNullOrWhiteSpace(pem));
 
-            var nonRoots = cert.Issuers.Where(x => !x.IsSelfSigned()).ToList();
+            Assert.All(cert.IssuersWithoutRoot, issuer => Assert.False(issuer.IsSelfSigned()));
 
             _output.WriteLine($"Downloaded cert from {ExistingOrderUri}");
             _output.WriteLine(pem);
