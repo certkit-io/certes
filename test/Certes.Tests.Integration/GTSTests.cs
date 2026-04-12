@@ -32,14 +32,10 @@ namespace Certes
 
         /// <summary>
         /// The account PEM produced by <see cref="RegisterAccountWithEAB"/>.
-        /// Paste it here so the other tests can reuse the same account.
+        /// Paste it here locally so the other tests can reuse the same account.
+        /// Do not commit real key material.
         /// </summary>
-        const string AccountPem =
-            "-----BEGIN EC PRIVATE KEY-----\r\n" +
-            "MHcCAQEEIANN7bqmtk4qo3BnqrbgU2R4kMJ6SaYojpuWrJphMa57oAoGCCqGSM49\r\n" +
-            "AwEHoUQDQgAEK0qJyC4uquwOA6rH16vvrXPVIUudk85UAH1DQMByFT7NNOOlt4pt\r\n" +
-            "1W0htzEcf9x7MCa1iBDl+4s+hQgsdC1JXQ==\r\n" +
-            "-----END EC PRIVATE KEY-----\r\n";
+        const string AccountPem = "";
 
         const string Domain = "gts.certkit.dev";
         const string AccountEmail = "you@example.com";
@@ -48,8 +44,7 @@ namespace Certes
         /// An existing order URI for <see cref="CanDownloadExistingOrder"/>.
         /// Update this after a successful <see cref="Can_Get_GTS_Cert"/> run.
         /// </summary>
-        const string ExistingOrderUri =
-            "https://dv.acme-v02.api.pki.goog/order/UT6-83GuW-0lvpalhmmoPg";
+        const string ExistingOrderUri = "";
 
         // EAB credentials from `gcloud publicca external-account-keys create`.
         // Only needed for RegisterAccountWithEAB; blank them out after use.
@@ -61,6 +56,18 @@ namespace Certes
         public GTS_Tests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        private static void AssertConfiguredAccount()
+        {
+            Assert.False(string.IsNullOrWhiteSpace(AccountPem),
+                "Set AccountPem locally before running this test.");
+        }
+
+        private static void AssertConfiguredExistingOrder()
+        {
+            Assert.False(string.IsNullOrWhiteSpace(ExistingOrderUri),
+                "Set ExistingOrderUri locally before running this test.");
         }
 
         /// <summary>
@@ -104,6 +111,8 @@ namespace Certes
         //[Fact]
         public async Task Can_Get_GTS_Cert()
         {
+            AssertConfiguredAccount();
+
             var acme = new AcmeContext(GtsDirectory, KeyFactory.FromPem(AccountPem));
 
             // Place a new order
@@ -149,9 +158,12 @@ namespace Certes
         /// Re-downloads a certificate from a previously completed order.
         /// Update <see cref="ExistingOrderUri"/> to point at a valid order.
         /// </summary>
-        [Fact]
+        //[Fact]
         public async Task CanDownloadExistingOrder()
         {
+            AssertConfiguredAccount();
+            AssertConfiguredExistingOrder();
+
             var acme = new AcmeContext(GtsDirectory, KeyFactory.FromPem(AccountPem));
             await acme.Account();
 
