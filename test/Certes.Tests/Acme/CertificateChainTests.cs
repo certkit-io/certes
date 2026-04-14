@@ -81,19 +81,42 @@ namespace Certes.Acme
         }
 
         [Fact]
-        public void IssuersWithoutRoot_ReturnsAllIssuersWhenNoRootPresent()
+        public void IssuersWithoutRoot_KeepsAllIssuersWhenLastIsNotCa()
         {
             var pem =
                 string.Join(Environment.NewLine,
                 File.ReadAllText("./Data/leaf-cert.pem").Trim(),
-                File.ReadAllText("./Data/test-ca2.pem").Trim());
+                File.ReadAllText("./Data/alternateLeaf.pem").Trim(),
+                File.ReadAllText("./Data/defaultLeaf.pem").Trim());
 
             var chain = new CertificateChain(pem);
 
-            Assert.Single(chain.Issuers);
-            Assert.Single(chain.IssuersWithoutRoot);
+            Assert.Equal(2, chain.Issuers.Count);
+            Assert.Equal(2, chain.IssuersWithoutRoot.Count);
             Assert.Equal(
                 chain.Issuers[0].ToPem().Replace("\r", "").Trim(),
+                chain.IssuersWithoutRoot[0].ToPem().Replace("\r", "").Trim());
+            Assert.Equal(
+                chain.Issuers[1].ToPem().Replace("\r", "").Trim(),
+                chain.IssuersWithoutRoot[1].ToPem().Replace("\r", "").Trim());
+        }
+
+        [Fact]
+        public void IssuersWithoutRoot_FiltersCrossSignedRoot()
+        {
+            var pem =
+                string.Join(Environment.NewLine,
+                File.ReadAllText("./Data/leaf-cert.pem").Trim(),
+                File.ReadAllText("./Data/test-ca2.pem").Trim(),
+                File.ReadAllText("./Data/gts-root-crosssigned.pem").Trim());
+
+            var chain = new CertificateChain(pem);
+
+            Assert.Equal(2, chain.Issuers.Count);
+            Assert.Single(chain.IssuersWithoutRoot);
+            Assert.False(chain.IssuersWithoutRoot[0].IsSelfSigned());
+            Assert.Equal(
+                File.ReadAllText("./Data/test-ca2.pem").Replace("\r", "").Trim(),
                 chain.IssuersWithoutRoot[0].ToPem().Replace("\r", "").Trim());
         }
     }
