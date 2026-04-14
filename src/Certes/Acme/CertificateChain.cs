@@ -43,34 +43,6 @@ namespace Certes.Acme
         public IList<IEncodable> Issuers { get; }
 
         /// <summary>
-        /// Gets the issuers excluding the terminal root certificate, if present.
-        /// The last issuer is treated as a root (and filtered) when its
-        /// BasicConstraints extension asserts CA=true, which covers both
-        /// self-signed and cross-signed roots.
-        /// </summary>
-        /// <value>
-        /// The intermediate certificates in the chain.
-        /// </value>
-        public IList<IEncodable> IssuersWithoutRoot
-        {
-            get
-            {
-                if (Issuers.Count == 0)
-                {
-                    return Array.Empty<IEncodable>();
-                }
-
-                var parser = new X509CertificateParser();
-                var last = parser.ReadCertificate(Issuers[Issuers.Count - 1].ToDer());
-                var lastIsCa = last.GetBasicConstraints() >= 0;
-
-                return lastIsCa
-                    ? Issuers.Take(Issuers.Count - 1).ToArray()
-                    : Issuers.ToArray();
-            }
-        }
-
-        /// <summary>
         /// Checks if the certificate chain is signed by a preferred issuer.
         /// </summary>
         /// <param name="preferredChain">The name of the preferred issuer</param>

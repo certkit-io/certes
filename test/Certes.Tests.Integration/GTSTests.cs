@@ -44,7 +44,7 @@ namespace Certes
         /// An existing order URI for <see cref="CanDownloadExistingOrder"/>.
         /// Update this after a successful <see cref="Can_Get_GTS_Cert"/> run.
         /// </summary>
-        const string ExistingOrderUri = "";
+        const string ExistingOrderUri = "https://dv.acme-v02.api.pki.goog/order/rtCSO8zLts1wMMUTAw7E3Q";
 
         // EAB credentials from `gcloud publicca external-account-keys create`.
         // Only needed for RegisterAccountWithEAB; blank them out after use.
@@ -174,8 +174,6 @@ namespace Certes
 
             var pem = cert.ToPem();
             Assert.False(string.IsNullOrWhiteSpace(pem));
-
-            Assert.All(cert.IssuersWithoutRoot, issuer => Assert.False(issuer.IsSelfSigned()));
 
             _output.WriteLine($"Downloaded cert from {ExistingOrderUri}");
             _output.WriteLine(pem);
