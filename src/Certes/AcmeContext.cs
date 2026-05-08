@@ -139,7 +139,7 @@ namespace Certes
         {
             if (directory == null)
             {
-                var resp = await HttpClient.Get<Directory>(DirectoryUri);
+                var resp = await HttpClient.Get<Directory>(DirectoryUri, ensureSuccessStatusCode: true);
                 directory = resp.Resource;
             }
 
@@ -224,7 +224,7 @@ namespace Certes
 
             var baseStr = renewalInfoUri.AbsoluteUri.TrimEnd('/') + "/";
             var uri = new Uri(baseStr + certId);
-            var resp = await HttpClient.Get<RenewalInfo>(uri);
+            var resp = await HttpClient.Get<RenewalInfo>(uri, ensureSuccessStatusCode: true);
             return new RenewalInfoResponse(resp.Resource, resp.RetryAfter);
         }
 

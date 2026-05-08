@@ -127,5 +127,35 @@ namespace Certes.Acme
 
             return response;
         }
+
+        /// <summary>
+        /// Gets the data from the specified URI.
+        /// </summary>
+        /// <typeparam name="T">The type of expected result</typeparam>
+        /// <param name="client">The client.</param>
+        /// <param name="uri">The URI.</param>
+        /// <param name="ensureSuccessStatusCode">if set to <c>true</c>, throw exception if the request failed.</param>
+        /// <returns>
+        /// The response from ACME server.
+        /// </returns>
+        /// <exception cref="AcmeRequestException">
+        /// If the HTTP request failed and <paramref name="ensureSuccessStatusCode"/> is <c>true</c>.
+        /// </exception>
+        internal static async Task<AcmeHttpResponse<T>> Get<T>(
+            this IAcmeHttpClient client,
+            Uri uri,
+            bool ensureSuccessStatusCode)
+        {
+            var response = await client.Get<T>(uri);
+
+            if (ensureSuccessStatusCode && response.Error != null)
+            {
+                throw new AcmeRequestException(
+                    string.Format(Strings.ErrorFetchResource, uri),
+                    response.Error);
+            }
+
+            return response;
+        }
     }
 }

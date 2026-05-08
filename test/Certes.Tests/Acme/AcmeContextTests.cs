@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Certes.Acme.Resource;
@@ -70,6 +71,29 @@ namespace Certes.Acme
             var authz = ctx.Authorization(loc);
 
             Assert.Equal(loc, authz.Location);
+        }
+
+        [Fact]
+        public async Task GetDirectoryThrowsWhenServerReturnsError()
+        {
+            var directoryUri = new Uri("http://acme.d/dict");
+            var httpClientMock = new Mock<IAcmeHttpClient>();
+
+            var error = new AcmeError
+            {
+                Status = HttpStatusCode.ServiceUnavailable,
+                Type = "urn:ietf:params:acme:error:serverInternal",
+                Detail = "ACME server is temporarily unavailable",
+            };
+
+            httpClientMock.Setup(m => m.Get<Directory>(directoryUri))
+                .ReturnsAsync(new AcmeHttpResponse<Directory>(directoryUri, default, default, error));
+
+            var ctx = new AcmeContext(directoryUri, http: httpClientMock.Object);
+
+            var thrown = await Assert.ThrowsAsync<AcmeRequestException>(() => ctx.GetDirectory());
+            Assert.Equal("urn:ietf:params:acme:error:serverInternal", thrown.Error.Type);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, thrown.Error.Status);
         }
 
         [Fact]
