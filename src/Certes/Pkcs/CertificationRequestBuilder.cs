@@ -138,10 +138,11 @@ namespace Certes.Pkcs
                 .Select(n => new GeneralName(GeneralName.DnsName, n))
                 .ToArray();
 
+            // Only the SAN is requested, the same as certbot. The CA sets key usage and basic constraints from its
+            // own profile, and some reject a CSR that asks for a key usage they won't grant: SSL.com has answered
+            // badCSR "Requested key usage will not be granted" to NonRepudiation, and to KeyEncipherment on an EC key.
             var extensions = new X509Extensions(new Dictionary<DerObjectIdentifier, X509Extension>
             {
-                { X509Extensions.BasicConstraints, new X509Extension(false, new DerOctetString(new BasicConstraints(false))) },
-                { X509Extensions.KeyUsage, new X509Extension(false, new DerOctetString(new KeyUsage(KeyUsage.DigitalSignature | KeyUsage.KeyEncipherment | KeyUsage.NonRepudiation))) },
                 { X509Extensions.SubjectAlternativeName, new X509Extension(false, new DerOctetString(new GeneralNames(altNames))) }
             });
 

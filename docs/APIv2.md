@@ -126,6 +126,9 @@ csr.AddName($"C=CA, ST=State, L=City, O=Dept, CN=*.example.com");
 await orderCtx.Finalize(csr.Generate());
 ```
 
+Either way, the CSR asks for the subject alternative names and nothing else. Key usage and basic
+constraints are left to the CA, because some CAs reject a CSR that requests a key usage they will not grant.
+
 Download the certificate PEM.
 
 ```C#
