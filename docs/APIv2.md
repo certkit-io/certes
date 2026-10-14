@@ -129,6 +129,25 @@ await orderCtx.Finalize(csr.Generate());
 Either way, the CSR asks for the subject alternative names and nothing else. Key usage and basic
 constraints are left to the CA, because some CAs reject a CSR that requests a key usage they will not grant.
 
+To ask for more, add extensions to the CSR. GlobalSign, for one, rejects a CSR without an extended key usage.
+An added extension with the same OID as the subject alternative names replaces them.
+
+```C#
+await orderCtx.Finalize(
+    new CsrInfo
+    {
+        Extensions =
+        {
+            // TLS server authentication
+            new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.1") }, false),
+            new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true),
+        },
+    }, certKey);
+
+// Or on a customized CSR
+csr.Extensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.1") }, false));
+```
+
 Download the certificate PEM.
 
 ```C#

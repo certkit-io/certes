@@ -1,10 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using Moq;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Pkcs;
 using Xunit;
 
 namespace Certes
@@ -456,6 +460,41 @@ namespace Certes
                     CountryName = "C",
                     CommonName = "www.certes.com",
                 }, key, TimeSpan.Zero));
+        }
+
+        [Fact]
+        public async Task FinalizeAddsCsrInfoExtensions()
+        {
+            byte[] csr = null;
+
+            var orderCtxMock = new Mock<IOrderContext>();
+            orderCtxMock.Setup(m => m.Resource()).ReturnsAsync(new Order
+            {
+                Identifiers = new[] {
+                    new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                },
+                Status = OrderStatus.Ready,
+            });
+            orderCtxMock.Setup(m => m.Finalize(It.IsAny<byte[]>()))
+                .Callback<byte[]>(c => csr = c)
+                .ReturnsAsync(new Order
+                {
+                    Identifiers = new[] {
+                        new Identifier { Value = "www.certes.com", Type = IdentifierType.Dns },
+                    },
+                    Status = OrderStatus.Valid,
+                });
+
+            var key = KeyFactory.NewKey(KeyAlgorithm.ES256);
+            await orderCtxMock.Object.Finalize(new CsrInfo
+            {
+                CommonName = "www.certes.com",
+                Extensions = { new X509EnhancedKeyUsageExtension(new OidCollection { new Oid("1.3.6.1.5.5.7.3.1") }, false) },
+            }, key);
+
+            var requested = new Pkcs10CertificationRequest(csr).GetRequestedExtensions();
+            var usages = ExtendedKeyUsage.GetInstance(requested.GetExtension(X509Extensions.ExtendedKeyUsage).GetParsedValue());
+            Assert.Equal(new[] { "1.3.6.1.5.5.7.3.1" }, usages.GetAllUsages().Select(u => u.Id));
         }
 
     }

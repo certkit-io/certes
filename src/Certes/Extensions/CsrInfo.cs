@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Certes
 {
@@ -82,6 +83,16 @@ namespace Certes
             get => data.TryGetValue("CN", out var value) ? value : null;
             set => data["CN"] = value;
         }
+
+        /// <summary>
+        /// Gets or sets extensions to add to the CSR, such as an <see cref="X509EnhancedKeyUsageExtension"/> or a
+        /// <see cref="X509KeyUsageExtension"/>. If empty, the CSR asks for the subject alternative names only and the CA
+        /// sets the rest from its own profile.
+        /// </summary>
+        /// <value>
+        /// The extensions.
+        /// </value>
+        public IList<X509Extension> Extensions { get; set; } = new List<X509Extension>();
 
         /// <summary>
         /// Gets all the fields with value.

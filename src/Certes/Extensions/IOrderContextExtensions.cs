@@ -35,6 +35,11 @@ namespace Certes
                 builder.AddName("CN", builder.SubjectAlternativeNames[0]);
             }
 
+            foreach (var extension in csr.Extensions)
+            {
+                builder.Extensions.Add(extension);
+            }
+
             return await context.Finalize(builder.Generate());
         }
 
