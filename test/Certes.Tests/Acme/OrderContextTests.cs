@@ -102,6 +102,28 @@ namespace Certes.Acme
         }
 
         [Fact]
+        public async Task FinalizeUpdatesRetryAfter()
+        {
+            SetupCommonContext();
+            var finalizeUri = new Uri("http://acme.d/order/101/finalize");
+            var order = new Order { Finalize = finalizeUri };
+            var finalized = new Order { Status = OrderStatus.Processing };
+
+            httpClientMock
+                .Setup(m => m.Post<Order>(location, It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(location, order, default, default, retryAfter: 3));
+            httpClientMock
+                .Setup(m => m.Post<Order>(finalizeUri, It.IsAny<JwsPayload>()))
+                .ReturnsAsync(new AcmeHttpResponse<Order>(location, finalized, default, default, retryAfter: 11));
+
+            var ctx = new OrderContext(contextMock.Object, location);
+            var actual = await ctx.Finalize(new byte[] { 1, 2, 3 });
+
+            Assert.Same(finalized, actual);
+            Assert.Equal(11, ctx.RetryAfter);
+        }
+
+        [Fact]
         public async Task DownloadRetriesOrderUntilCertificateUriIsAvailable()
         {
             SetupCommonContext();
