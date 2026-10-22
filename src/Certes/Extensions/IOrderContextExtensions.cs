@@ -62,7 +62,7 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="retryCount">Number of retries when the Order is in 'processing' state. (default = 1)</param>
+        /// <param name="retryCount">Number of retries shared by order readiness, processing, and certificate URI polling. (default = 1)</param>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>
         /// The certificate generated.
@@ -70,10 +70,15 @@ namespace Certes
         public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, string preferredChain = null, int retryCount = 1)
         {
             var order = await context.Resource();
-            if (order.Status != OrderStatus.Ready && // draft-11
-                order.Status != OrderStatus.Pending) // pre draft-11
+            while (order.Status == OrderStatus.Pending && retryCount-- > 0)
             {
-                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
+                await Task.Delay(TimeSpan.FromSeconds(OrderContext.GetRetryDelaySeconds(context.RetryAfter)));
+                order = await context.Resource();
+            }
+
+            if (order.Status != OrderStatus.Ready)
+            {
+                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status?.ToString() ?? "Unknown"));
             }
 
             order = await context.Finalize(csr, key);
@@ -99,7 +104,7 @@ namespace Certes
         /// <param name="context">The order context.</param>
         /// <param name="csr">The CSR.</param>
         /// <param name="key">The private key for the certificate.</param>
-        /// <param name="maxWait">Maximum time to spend waiting for finalization and download.</param>
+        /// <param name="maxWait">Maximum time to spend waiting for order readiness, finalization and download.</param>
         /// <param name="preferredChain">The preferred Root Certificate.</param>
         /// <returns>The certificate generated.</returns>
         public static async Task<CertificateChain> Generate(this IOrderContext context, CsrInfo csr, IKey key, TimeSpan maxWait, string preferredChain = null)
@@ -107,10 +112,15 @@ namespace Certes
             var deadline = DateTime.UtcNow + maxWait;
 
             var order = await context.Resource();
-            if (order.Status != OrderStatus.Ready && // draft-11
-                order.Status != OrderStatus.Pending) // pre draft-11
+            while (order.Status == OrderStatus.Pending && DateTime.UtcNow < deadline)
             {
-                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status));
+                await Task.Delay(TimeSpan.FromSeconds(OrderContext.GetRetryDelaySeconds(context.RetryAfter)));
+                order = await context.Resource();
+            }
+
+            if (order.Status != OrderStatus.Ready)
+            {
+                throw new AcmeException(string.Format(Strings.ErrorInvalidOrderStatusForFinalize, order.Status?.ToString() ?? "Unknown"));
             }
 
             order = await context.Finalize(csr, key);
